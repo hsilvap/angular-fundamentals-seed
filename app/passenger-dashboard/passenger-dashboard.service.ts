@@ -1,43 +1,41 @@
+import {Injectable} from '@angular/core';
 import { Passenger } from "./models/passenger.interface";
 
-export class PassengerDashboardService{
-    constructor(){}
+import {Observable} from 'rxjs/Observable';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/catch';
+import 'rxjs/add/observable/throw';
 
-    getPassengers(): Passenger[]{
-        return [{
-            id: 1,
-            fullname: 'Stephen',
-            checkedIn:true,
-            checkInDate: 149074200000,
-            children: null
-          },
-          {
-            id: 2,
-            fullname: 'Rose',
-            checkedIn:false,
-            checkInDate: null,
-            children: [{name: 'ted', age:12}, {name:'Chloe', age: 8}]
-          },
-          {
-            id: 3,
-            fullname: 'James',
-            checkedIn:true,
-            checkInDate: 149074200000,
-            children: null
-          },
-          {
-            id: 4,
-            fullname: 'Louise',
-            checkedIn:true,
-            checkInDate: 149074200000,
-            children: [{name: 'Jessica', age:1}]
-          },
-          {
-            id: 5,
-            fullname: 'Tina',
-            checkedIn:false,
-            checkInDate: null,
-            children: null
-          }];
+import {Http, Response } from '@angular/http';
+
+const PASSENGER_API: string ='/api/passengers'
+
+@Injectable()
+export class PassengerDashboardService{
+    constructor(private http: Http){
+    }
+
+    getPassenger(id: number): Observable<Passenger>{
+        return this.http.get(`${PASSENGER_API}/${id}`) // Obs<HttpResponse>
+            .map((response: Response) => response.json())
+            .catch((error: any)=> Observable.throw(error.json()));
+    }
+
+    getPassengers(): Observable<Passenger[]>{
+        return this.http.get(PASSENGER_API) // Obs<HttpResponse>
+            .map((response: Response) => response.json())
+            .catch((error: any)=> Observable.throw(error.json()));
+    }
+
+    updatePassenger(passenger: Passenger): Observable<Passenger>{
+        return this.http.put(`${PASSENGER_API}/${passenger.id}`, passenger) // Obs<HttpResponse>
+            .map((response: Response) => response.json())
+            .catch((error: any)=> Observable.throw(error.json()));
+    }
+
+    removePassenger(passenger: Passenger): Observable<Passenger>{
+        return this.http.delete(`${PASSENGER_API}/${passenger.id}`) // Obs<HttpResponse>
+            .map((response: Response) => response.json())
+            .catch((error: any)=> Observable.throw(error.json()));
     }
 }
